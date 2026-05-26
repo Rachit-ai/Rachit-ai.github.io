@@ -1,0 +1,1230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Rachit Kumar — Data Analyst</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Space+Mono:wght@400;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#04080f;--bg2:#060d1a;
+  --cyan:#00f0ff;--cyan2:#00b8d4;
+  --cglow:rgba(0,240,255,.22);
+  --text:#d6eaf8;--muted:#5a8aa8;
+  --bdr:rgba(0,240,255,.1);
+  --fh:'Syne',sans-serif;--fm:'Space Mono',monospace;--fb:'DM Sans',sans-serif;
+}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--text);font-family:var(--fb);overflow-x:hidden;cursor:none}
+::selection{background:var(--cyan);color:var(--bg)}
+::-webkit-scrollbar{width:4px}::-webkit-scrollbar-track{background:var(--bg)}::-webkit-scrollbar-thumb{background:var(--cyan2);border-radius:2px}
+#cur{position:fixed;width:10px;height:10px;background:var(--cyan);border-radius:50%;pointer-events:none;z-index:9999;transform:translate(-50%,-50%);transition:width .15s,height .15s;mix-blend-mode:screen;top:0;left:0}
+#curr{position:fixed;width:34px;height:34px;border:1px solid rgba(0,240,255,.5);border-radius:50%;pointer-events:none;z-index:9998;transform:translate(-50%,-50%);top:0;left:0}
+nav{position:fixed;top:0;left:0;right:0;z-index:500;display:flex;align-items:center;justify-content:space-between;padding:0 6vw;height:62px;background:rgba(4,8,15,.8);backdrop-filter:blur(18px);border-bottom:1px solid var(--bdr)}
+.nl{font-family:var(--fm);font-size:.9rem;color:var(--cyan);text-decoration:none;letter-spacing:.08em}
+.nl span{color:var(--text)}
+.nls{display:flex;gap:2.2rem;list-style:none}
+.nls a{font-family:var(--fm);font-size:.68rem;color:var(--muted);text-decoration:none;letter-spacing:.15em;text-transform:uppercase;transition:color .2s}
+.nls a:hover,.nls a.on{color:var(--cyan)}
+.nh{font-family:var(--fm);font-size:.68rem;letter-spacing:.12em;text-transform:uppercase;color:var(--cyan);border:1px solid var(--cyan);padding:.38rem 1rem;border-radius:2px;text-decoration:none;transition:background .2s,color .2s}
+.nh:hover{background:var(--cyan);color:var(--bg)}
+.hbg{display:none;flex-direction:column;gap:5px;cursor:pointer;background:none;border:none;padding:4px}
+.hbg span{width:22px;height:1.5px;background:var(--cyan);display:block}
+
+/* KEY: every section is relative+overflow:hidden; canvas is absolute inset-0 */
+section{position:relative;overflow:hidden}
+.sc{position:absolute;top:0;left:0;width:100%;height:100%;display:block;z-index:0;pointer-events:none}
+.sw{position:relative;z-index:2;padding:110px 6vw}
+.ctr{max-width:1100px;margin:0 auto}
+.sl{font-family:var(--fm);font-size:.68rem;color:var(--cyan);letter-spacing:.28em;text-transform:uppercase;margin-bottom:.5rem}
+.st{font-family:var(--fh);font-size:clamp(2rem,4.5vw,3.2rem);font-weight:800;line-height:1.05;color:var(--text);margin-bottom:.4rem}
+.st .ac{color:var(--cyan)}
+.st .ao{-webkit-text-stroke:1.5px var(--cyan);color:transparent}
+.dl{width:48px;height:2px;background:linear-gradient(90deg,var(--cyan),transparent);margin-bottom:2.8rem}
+
+#hero{height:100vh;display:flex;align-items:center;padding:0 8vw;background:var(--bg)}
+.hc{position:relative;z-index:2;max-width:680px}
+.he{font-family:var(--fm);font-size:.7rem;color:var(--cyan);letter-spacing:.22em;text-transform:uppercase;margin-bottom:1rem;display:flex;align-items:center;gap:.8rem;opacity:0;animation:fu .7s .3s forwards}
+.he::before{content:'';width:28px;height:1px;background:var(--cyan)}
+.hn{font-family:var(--fh);font-weight:800;font-size:clamp(3.2rem,9vw,7rem);line-height:.9;letter-spacing:-.03em;color:var(--text);opacity:0;animation:fu .7s .5s forwards;margin-bottom:.4rem}
+.hn .co{color:transparent;-webkit-text-stroke:2px var(--cyan);text-shadow:0 0 50px var(--cglow)}
+.hsb{font-family:var(--fm);font-size:clamp(.8rem,1.8vw,1rem);color:var(--muted);margin-bottom:1.6rem;opacity:0;animation:fu .7s .7s forwards}
+.hsb b{color:var(--cyan);font-weight:400}
+.htg{font-size:clamp(.95rem,2vw,1.15rem);color:var(--text);font-weight:300;max-width:460px;line-height:1.75;margin-bottom:2.4rem;opacity:0;animation:fu .7s .9s forwards;padding-left:1.1rem;border-left:2px solid var(--cyan)}
+.hbs{display:flex;gap:1rem;flex-wrap:wrap;opacity:0;animation:fu .7s 1.1s forwards}
+.bp{font-family:var(--fm);font-size:.76rem;letter-spacing:.1em;text-transform:uppercase;background:var(--cyan);color:var(--bg);padding:.82rem 1.9rem;border:none;border-radius:2px;cursor:pointer;text-decoration:none;font-weight:700;transition:box-shadow .25s,transform .2s}
+.bp:hover{box-shadow:0 0 35px var(--cglow),0 0 12px var(--cyan);transform:translateY(-3px)}
+.bo{font-family:var(--fm);font-size:.76rem;letter-spacing:.1em;text-transform:uppercase;background:transparent;color:var(--cyan);padding:.82rem 1.9rem;border:1px solid var(--cyan);border-radius:2px;cursor:pointer;text-decoration:none;transition:background .25s,box-shadow .25s,transform .2s}
+.bo:hover{background:rgba(0,240,255,.08);box-shadow:0 0 25px var(--cglow);transform:translateY(-3px)}
+.hscr{position:absolute;bottom:2rem;left:50%;transform:translateX(-50%);z-index:2;display:flex;flex-direction:column;align-items:center;gap:.45rem;font-family:var(--fm);font-size:.58rem;color:var(--muted);letter-spacing:.2em;text-transform:uppercase;animation:bounce 2.5s infinite}
+.hscr::after{content:'';width:1px;height:42px;background:linear-gradient(to bottom,var(--cyan),transparent)}
+
+#about{background:var(--bg2)}
+.ain{display:grid;grid-template-columns:1fr 1fr;gap:5rem;align-items:center}
+.atx p{color:var(--muted);font-size:.98rem;line-height:1.9;margin-bottom:1.1rem}
+.atx p b{color:var(--cyan);font-weight:500}
+.asts{display:grid;grid-template-columns:1fr 1fr;gap:1.1rem}
+.ast{background:rgba(0,240,255,.04);border:1px solid var(--bdr);border-radius:6px;padding:1.5rem;text-align:center;transition:border-color .3s,box-shadow .3s,transform .4s;transform-style:preserve-3d}
+.ast:hover{border-color:var(--cyan);box-shadow:0 0 30px var(--cglow),0 15px 35px rgba(0,0,0,.4);transform:translateY(-6px) rotateX(6deg)}
+.asn{font-family:var(--fm);font-size:2.4rem;font-weight:700;color:var(--cyan);line-height:1;margin-bottom:.3rem}
+.asl{font-size:.68rem;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;font-family:var(--fm)}
+
+#skills{background:var(--bg)}
+.sgr{display:grid;grid-template-columns:repeat(auto-fit,minmax(235px,1fr));gap:1.4rem}
+.skc{background:rgba(6,13,26,.88);border:1px solid var(--bdr);border-radius:8px;padding:1.7rem;position:relative;overflow:hidden;transform-style:preserve-3d;transition:border-color .3s,box-shadow .3s;cursor:default}
+.skc::after{content:'';position:absolute;inset:0;background:radial-gradient(circle at var(--mx,50%) var(--my,50%),rgba(0,240,255,.07) 0%,transparent 65%);opacity:0;transition:opacity .3s;pointer-events:none}
+.skc:hover{border-color:rgba(0,240,255,.45);box-shadow:0 18px 55px rgba(0,0,0,.5),0 0 28px var(--cglow)}
+.skc:hover::after{opacity:1}
+.ski{font-size:1.9rem;margin-bottom:.75rem;display:block}
+.skt{font-family:var(--fh);font-size:.76rem;font-weight:700;color:var(--cyan);letter-spacing:.12em;text-transform:uppercase;margin-bottom:.9rem}
+.stgs{display:flex;flex-wrap:wrap;gap:.42rem}
+.stg{font-family:var(--fm);font-size:.66rem;background:rgba(0,240,255,.06);color:var(--text);border:1px solid rgba(0,240,255,.12);padding:.26rem .6rem;border-radius:2px;transition:background .2s,color .2s,transform .15s}
+.stg:hover{background:var(--cyan);color:var(--bg);transform:translateY(-2px)}
+
+#experience{background:var(--bg2)}
+.tl{position:relative;padding-left:1.8rem;max-width:740px}
+.tl::before{content:'';position:absolute;left:0;top:8px;bottom:0;width:1px;background:linear-gradient(to bottom,var(--cyan),var(--cyan2),transparent)}
+.ti{position:relative;padding:0 0 2.8rem 2.4rem;opacity:0;transform:translateX(24px);transition:opacity .65s,transform .65s}
+.ti.vis{opacity:1;transform:none}
+.td{position:absolute;left:-1.97rem;top:5px;width:14px;height:14px;background:var(--bg);border:2px solid var(--cyan);border-radius:50%;box-shadow:0 0 12px var(--cglow);transition:background .3s}
+.ti:hover .td{background:var(--cyan)}
+.tdt{font-family:var(--fm);font-size:.66rem;color:var(--cyan);letter-spacing:.15em;text-transform:uppercase;margin-bottom:.35rem;position:relative;z-index:3}
+.tr{font-family:var(--fh);font-size:1.15rem;font-weight:700;color:var(--text);margin-bottom:.15rem;position:relative;z-index:3}
+.tc{font-family:var(--fm);font-size:.75rem;color:var(--muted);margin-bottom:.65rem;position:relative;z-index:3}
+.tb{background:rgba(4,8,15,.92);border:1px solid var(--bdr);border-radius:7px;padding:1.4rem;transition:border-color .3s,box-shadow .3s,transform .35s;transform-style:preserve-3d;position:relative;z-index:3}
+.ti:hover .tb{border-color:rgba(0,240,255,.28);box-shadow:0 8px 35px rgba(0,0,0,.3),0 0 18px var(--cglow);transform:translateX(5px) rotateY(-2deg)}
+.tdsc{color:var(--muted);font-size:.9rem;line-height:1.8}
+
+#projects{background:var(--bg)}
+.pgr{display:grid;grid-template-columns:repeat(auto-fit,minmax(295px,1fr));gap:1.8rem}
+.pc{background:rgba(4,8,15,.9);border:1px solid var(--bdr);border-radius:9px;padding:2rem;display:flex;flex-direction:column;position:relative;overflow:hidden;transform-style:preserve-3d;opacity:0;transform:translateY(28px);transition:opacity .65s,transform .65s,border-color .3s,box-shadow .3s}
+.pc::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--cyan),transparent);opacity:0;transition:opacity .3s}
+.pc.vis{opacity:1;transform:translateY(0)}
+.pc:hover{border-color:rgba(0,240,255,.4);box-shadow:0 22px 65px rgba(0,0,0,.6),0 0 35px var(--cglow)}
+.pc:hover::before{opacity:1}
+.pn{font-family:var(--fm);font-size:.62rem;color:var(--cyan);letter-spacing:.2em;margin-bottom:.85rem;opacity:.55}
+.ptl{font-family:var(--fh);font-size:1.15rem;font-weight:700;color:var(--text);margin-bottom:.75rem}
+.pds{color:var(--muted);font-size:.88rem;line-height:1.8;flex:1;margin-bottom:1.3rem}
+.ptgs{display:flex;flex-wrap:wrap;gap:.38rem;margin-bottom:1.3rem}
+.ptg{font-family:var(--fm);font-size:.62rem;background:rgba(0,240,255,.06);color:var(--cyan2);border:1px solid rgba(0,240,255,.14);padding:.2rem .52rem;border-radius:20px;transition:background .2s}
+.pc:hover .ptg{background:rgba(0,240,255,.12)}
+.plk{font-family:var(--fm);font-size:.7rem;letter-spacing:.1em;text-transform:uppercase;color:var(--cyan);text-decoration:none;display:inline-flex;align-items:center;gap:.4rem;transition:gap .2s}
+.plk:hover{gap:.8rem}
+.plk::after{content:'→'}
+
+#contact{background:var(--bg2)}
+.cin{display:grid;grid-template-columns:1fr 1.4fr;gap:4.5rem}
+.cif p{color:var(--muted);margin-bottom:1.8rem;line-height:1.85;font-size:.95rem}
+.clks{display:flex;flex-direction:column;gap:.9rem}
+.clk{display:flex;align-items:center;gap:.9rem;font-family:var(--fm);font-size:.76rem;color:var(--muted);text-decoration:none;transition:color .2s}
+.clk:hover{color:var(--cyan)}
+.clki{width:40px;height:40px;border:1px solid var(--bdr);border-radius:5px;display:flex;align-items:center;justify-content:center;font-size:1.05rem;transition:border-color .2s,box-shadow .2s,transform .25s;flex-shrink:0}
+.clk:hover .clki{border-color:var(--cyan);box-shadow:0 0 16px var(--cglow);transform:rotateY(18deg) scale(1.06)}
+.cfm{display:flex;flex-direction:column;gap:1.1rem}
+.fg{display:flex;flex-direction:column;gap:.4rem}
+.fg label{font-family:var(--fm);font-size:.66rem;color:var(--cyan);letter-spacing:.15em;text-transform:uppercase}
+.fg input,.fg textarea{background:rgba(9,21,37,.85);border:1px solid var(--bdr);color:var(--text);font-family:var(--fb);font-size:.92rem;padding:.82rem 1rem;border-radius:5px;outline:none;resize:vertical;transition:border-color .2s,box-shadow .2s}
+.fg input:focus,.fg textarea:focus{border-color:var(--cyan);box-shadow:0 0 0 3px rgba(0,240,255,.08)}
+.fg textarea{min-height:125px}
+.csb{font-family:var(--fm);font-size:.76rem;letter-spacing:.12em;text-transform:uppercase;background:var(--cyan);color:var(--bg);padding:.88rem 1.9rem;border:none;border-radius:2px;cursor:pointer;font-weight:700;align-self:flex-start;transition:box-shadow .25s,transform .2s}
+.csb:hover{box-shadow:0 0 32px var(--cglow),0 0 10px var(--cyan);transform:translateY(-3px)}
+
+footer{background:var(--bg);border-top:1px solid var(--bdr);padding:2rem 6vw;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem}
+.fcp{font-family:var(--fm);font-size:.66rem;color:var(--muted)}
+.flks{display:flex;gap:1.5rem}
+.flks a{font-family:var(--fm);font-size:.66rem;color:var(--muted);text-decoration:none;transition:color .2s}
+.flks a:hover{color:var(--cyan)}
+
+/* --- VIEW TOGGLE --- */
+.toggle-container {
+  position: fixed;
+  bottom: 2rem;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(6, 13, 26, 0.85);
+  backdrop-filter: blur(18px);
+  border: 1px solid var(--bdr);
+  padding: 4px;
+  border-radius: 999px;
+  display: flex;
+  gap: 4px;
+  z-index: 9999;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4), 0 0 12px var(--cglow);
+}
+.toggle-btn {
+  background: transparent;
+  border: none;
+  color: var(--muted);
+  padding: .5rem 1.2rem;
+  border-radius: 999px;
+  font-family: var(--fm);
+  font-size: .72rem;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: .5rem;
+  transition: all .25s ease;
+}
+.toggle-btn .dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: currentColor;
+  display: inline-block;
+  outline: 1px solid currentColor;
+  outline-offset: 2px;
+}
+.toggle-btn.active {
+  background: var(--cyan);
+  color: var(--bg);
+  box-shadow: 0 0 15px var(--cglow);
+}
+.shortcut-hint {
+  font-size: .62rem;
+  opacity: .5;
+  margin-left: 2px;
+}
+
+/* --- TWIN DOM OVERLAYS --- */
+.human-layout {
+  opacity: 1;
+  transform: scale(1);
+  transition: opacity .45s ease, transform .45s ease;
+}
+.machine-layout {
+  display: none;
+  opacity: 0;
+  transform: translateY(18px);
+  transition: opacity .5s ease .05s, transform .5s ease .05s;
+}
+
+body.machine .human-layout { display: none; opacity: 0; transform: scale(.98); }
+body.machine .machine-layout { display: block; opacity: 1; transform: translateY(0); }
+body.machine { background: #020408 !important; cursor: auto; }
+body.machine .sc { display: none; }
+body.machine #cur, body.machine #curr { display: none; }
+
+/* --- TRANSITION OVERLAY FLASH --- */
+.view-transition-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 99998;
+  pointer-events: none;
+  background: radial-gradient(circle at 50% 50%, rgba(0,240,255,.12), transparent 70%);
+  opacity: 0;
+  transition: opacity .35s ease;
+}
+.view-transition-overlay.active {
+  opacity: 1;
+}
+
+/* Layout states during animated transition */
+.human-layout.fading-out {
+  opacity: 0;
+  transform: scale(.97);
+  transition: opacity .35s ease, transform .35s ease;
+}
+.machine-layout.fading-in {
+  display: block;
+  opacity: 0;
+  transform: translateY(18px);
+}
+.machine-layout.fading-in.reveal {
+  opacity: 1;
+  transform: translateY(0);
+  transition: opacity .45s ease, transform .45s ease;
+}
+.machine-layout.fading-out {
+  opacity: 0;
+  transform: translateY(12px);
+  transition: opacity .35s ease, transform .35s ease;
+}
+.human-layout.fading-in {
+  display: block;
+  opacity: 0;
+  transform: scale(.97);
+}
+.human-layout.fading-in.reveal {
+  opacity: 1;
+  transform: scale(1);
+  transition: opacity .45s ease, transform .45s ease;
+}
+
+/* --- TERMINAL STYLING --- */
+.terminal-window {
+  max-width: 900px;
+  width: 90vw;
+  margin: 60px auto 140px;
+  background: #03060b;
+  border: 1px solid var(--bdr);
+  border-radius: 8px;
+  box-shadow: 0 20px 80px rgba(0, 0, 0, 0.7), 0 0 40px rgba(0, 240, 255, 0.03);
+  overflow: hidden;
+  font-family: var(--fm);
+}
+.terminal-header {
+  background: rgba(6, 13, 26, 0.9);
+  border-bottom: 1px solid var(--bdr);
+  padding: .75rem 1.2rem;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.t-dot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; }
+.t-red { background: #ff5f56; }
+.t-yellow { background: #ffbd2e; }
+.t-green { background: #27c93f; }
+.t-title { color: var(--muted); font-size: .72rem; margin-left: 10px; letter-spacing: .05em; }
+.terminal-body {
+  padding: 2rem;
+  color: var(--text);
+  font-size: .88rem;
+  line-height: 1.7;
+  max-height: 75vh;
+  overflow-y: auto;
+}
+.cmd-line { display: flex; align-items: center; gap: .7rem; color: var(--cyan); margin-bottom: .6rem; }
+.cmd-line .prompt { color: var(--muted); }
+.cmd-output {
+  color: #a0c2d6;
+  margin-bottom: 2.2rem;
+  white-space: pre-wrap;
+}
+.cmd-output pre {
+  font-family: var(--fm);
+  font-size: .85rem;
+  color: var(--cyan2);
+}
+.blink { animation: blink 1s step-end infinite; }
+@keyframes blink { 50% { opacity: 0; } }
+
+/* --- INTERACTIVE TERMINAL INPUT --- */
+.term-input-row {
+  display: flex;
+  align-items: center;
+  gap: .7rem;
+  color: var(--cyan);
+  margin-top: .6rem;
+}
+.term-input-row .prompt { color: var(--muted); white-space: nowrap; }
+#termInput {
+  flex: 1;
+  background: transparent;
+  border: none;
+  outline: none;
+  color: var(--cyan);
+  font-family: var(--fm);
+  font-size: .88rem;
+  caret-color: var(--cyan);
+  letter-spacing: .03em;
+}
+#termInput::placeholder { color: rgba(0,240,255,.25); }
+.term-hint {
+  margin-top: 1.2rem;
+  font-size: .72rem;
+  color: var(--muted);
+  opacity: .6;
+}
+.term-hint span { color: var(--cyan); }
+
+/* --- STREAMING CURSOR --- */
+.stream-cursor {
+  color: var(--cyan);
+  animation: blink .6s step-end infinite;
+  font-weight: bold;
+  margin-left: 1px;
+}
+.cmd-output { transition: none; }
+
+.rv{opacity:0;transform:translateY(26px);transition:opacity .65s,transform .65s}
+.rv.vis{opacity:1;transform:none}
+@keyframes fu{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:none}}
+@keyframes bounce{0%,100%{transform:translateX(-50%) translateY(0)}50%{transform:translateX(-50%) translateY(8px)}}
+@media(max-width:768px){
+  .nls,.nh{display:none}
+  .hbg{display:flex}
+  .nls.open{display:flex;flex-direction:column;position:fixed;top:62px;left:0;right:0;background:rgba(4,8,15,.97);padding:1.8rem 6vw;gap:1.4rem;border-bottom:1px solid var(--bdr)}
+  .ain,.cin{grid-template-columns:1fr;gap:2.8rem}
+  footer{flex-direction:column;align-items:center;text-align:center}
+  #cur,#curr{display:none}body{cursor:auto}
+  .hscr{display:none}
+}
+</style>
+</head>
+<body>
+<div id="cur"></div>
+<div id="curr"></div>
+
+<div class="human-layout">
+<nav>
+  <a href="#hero" class="nl">RK<span>.</span></a>
+  <ul class="nls" id="nls">
+    <li><a href="#about">About</a></li>
+    <li><a href="#skills">Skills</a></li>
+    <li><a href="#experience">Experience</a></li>
+    <li><a href="#projects">Projects</a></li>
+    <li><a href="#contact">Contact</a></li>
+  </ul>
+  <a href="#contact" class="nh">Hire Me</a>
+  <button class="hbg" onclick="document.getElementById('nls').classList.toggle('open')">
+    <span></span><span></span><span></span>
+  </button>
+</nav>
+
+<section id="hero">
+  <canvas class="sc" id="ch"></canvas>
+  <div class="hc">
+    <p class="he">Available for opportunities</p>
+    <h1 class="hn">Rachit<br><span class="co">Kumar</span></h1>
+    <p class="hsb"><b>Data_Analyst</b> :: 4 Years :: Python · SQL · Automation</p>
+    <p class="htg">Turning raw data into real decisions — one pipeline at a time.</p>
+    <div class="hbs">
+      <a href="#projects" class="bp">View My Work</a>
+      <a href="#contact" class="bo">Contact Me</a>
+    </div>
+  </div>
+  <div class="hscr">Scroll</div>
+</section>
+
+<section id="about">
+  <canvas class="sc" id="ca"></canvas>
+  <div class="sw"><div class="ctr">
+    <div class="ain">
+      <div class="atx rv">
+        <p class="sl">// 01 — About</p>
+        <h2 class="st">Who I <span class="ac">Am</span></h2>
+        <div class="dl"></div>
+        <p>I'm a <b>Data Analyst with 4 years of experience</b> converting complex datasets into clear, actionable business intelligence. I thrive where data engineering meets automation and analytical storytelling.</p>
+        <p>My toolkit spans the full pipeline — from <b>web scraping and automation</b> with Python and Selenium, to deep analysis with Pandas and NumPy, to surfacing insights via SQL and MongoDB.</p>
+        <p>When not wrangling data, I'm leading teams, solving edge-case problems, and pushing automation limits with Appium and Android Studio test frameworks.</p>
+      </div>
+      <div class="asts rv">
+        <div class="ast"><div class="asn">4+</div><div class="asl">Years Exp.</div></div>
+        <div class="ast"><div class="asn">15+</div><div class="asl">Tools</div></div>
+        <div class="ast"><div class="asn">∞</div><div class="asl">Rows Processed</div></div>
+        <div class="ast"><div class="asn">01</div><div class="asl">Focus: Impact</div></div>
+      </div>
+    </div>
+  </div></div>
+</section>
+
+<section id="skills">
+  <canvas class="sc" id="cs"></canvas>
+  <div class="sw"><div class="ctr">
+    <p class="sl rv">// 02 — Skills</p>
+    <h2 class="st rv">My <span class="ao">Arsenal</span></h2>
+    <div class="dl"></div>
+    <div class="sgr">
+      <div class="skc rv"><span class="ski">📊</span><div class="skt">Data & Analytics</div><div class="stgs"><span class="stg">Python</span><span class="stg">Pandas</span><span class="stg">NumPy</span><span class="stg">SQL</span><span class="stg">MongoDB</span><span class="stg">JSON</span></div></div>
+      <div class="skc rv"><span class="ski">🤖</span><div class="skt">Automation & Testing</div><div class="stgs"><span class="stg">Selenium</span><span class="stg">Appium</span><span class="stg">Android Studio</span><span class="stg">Web Crawling</span><span class="stg">Web Scraping</span></div></div>
+      <div class="skc rv"><span class="ski">🛠️</span><div class="skt">Infrastructure</div><div class="stgs"><span class="stg">Linux</span><span class="stg">VM</span></div></div>
+      <div class="skc rv"><span class="ski">💡</span><div class="skt">Soft Skills</div><div class="stgs"><span class="stg">Problem Solving</span><span class="stg">Critical Thinking</span><span class="stg">Team Leadership</span></div></div>
+    </div>
+  </div></div>
+</section>
+
+<section id="experience">
+  <canvas class="sc" id="ce"></canvas>
+  <div class="sw"><div class="ctr">
+    <p class="sl rv">// 03 — Experience</p>
+    <h2 class="st rv">My <span class="ac">Journey</span></h2>
+    <div class="dl"></div>
+    <div class="tl">
+      <div class="ti"><div class="td"></div><div class="tdt">2022 — Present</div><div class="tr">Senior Data Analyst</div><div class="tc">Company Name · Full-Time</div><div class="tb"><p class="tdsc">Led end-to-end data pipeline development, automated reporting workflows using Python and Selenium, and delivered insights driving key business decisions. Managed a team of analysts and coordinated cross-functional data initiatives.</p></div></div>
+      <div class="ti"><div class="td"></div><div class="tdt">2021 — 2022</div><div class="tr">Data Analyst</div><div class="tc">Company Name · Full-Time</div><div class="tb"><p class="tdsc">Built scalable web scraping systems with Python and Selenium to collect large-scale structured data. Designed SQL and MongoDB queries for efficient retrieval and developed dashboards for stakeholder reporting.</p></div></div>
+      <div class="ti"><div class="td"></div><div class="tdt">2020 — 2021</div><div class="tr">Junior Data Analyst / QA Engineer</div><div class="tc">Company Name · Full-Time</div><div class="tb"><p class="tdsc">Developed automated test suites for Android applications using Appium and Android Studio. Analysed test-result data with Pandas and NumPy to identify performance bottlenecks and quality regressions.</p></div></div>
+    </div>
+  </div></div>
+</section>
+
+<section id="projects">
+  <canvas class="sc" id="cp"></canvas>
+  <div class="sw"><div class="ctr">
+    <p class="sl rv">// 04 — Projects</p>
+    <h2 class="st rv">Featured <span class="ac">Work</span></h2>
+    <div class="dl"></div>
+    <div class="pgr">
+      <div class="pc"><div class="pn">Project_01</div><div class="ptl">Automated Market Intelligence Pipeline</div><div class="pds">A fully automated web crawling system harvesting competitor pricing data daily, cleaning it with Pandas, and pushing results to MongoDB for real-time analytics dashboards.</div><div class="ptgs"><span class="ptg">Python</span><span class="ptg">Selenium</span><span class="ptg">Pandas</span><span class="ptg">MongoDB</span><span class="ptg">Linux</span></div><a href="#" class="plk">View Project</a></div>
+      <div class="pc"><div class="pn">Project_02</div><div class="ptl">Android App Test Automation Framework</div><div class="pds">A scalable mobile test automation framework using Appium and Android Studio reducing manual QA effort by 70%, generating structured reports via NumPy and JSON pipelines.</div><div class="ptgs"><span class="ptg">Appium</span><span class="ptg">Android Studio</span><span class="ptg">Python</span><span class="ptg">NumPy</span><span class="ptg">JSON</span></div><a href="#" class="plk">View Project</a></div>
+      <div class="pc"><div class="pn">Project_03</div><div class="ptl">Unified SQL & NoSQL Analytics Layer</div><div class="pds">Unified disparate SQL and MongoDB data sources into a single analytics layer. Python transformation scripts normalise schemas enabling cross-source queries for executive reporting.</div><div class="ptgs"><span class="ptg">SQL</span><span class="ptg">MongoDB</span><span class="ptg">Python</span><span class="ptg">Pandas</span><span class="ptg">VM</span></div><a href="#" class="plk">View Project</a></div>
+    </div>
+  </div></div>
+</section>
+
+<section id="contact">
+  <canvas class="sc" id="cc"></canvas>
+  <div class="sw"><div class="ctr">
+    <p class="sl rv">// 05 — Contact</p>
+    <h2 class="st rv">Let's <span class="ac">Connect</span></h2>
+    <div class="dl"></div>
+    <div class="cin">
+      <div class="cif rv">
+        <p>Have a data challenge, automation project, or just want to talk shop? I'm always open to new opportunities and interesting conversations.</p>
+        <div class="clks">
+          <a href="mailto:rachitr68@gmail.com" class="clk"><div class="clki">✉️</div>rachitr68@gmail.com</a>
+          <a href="https://www.linkedin.com/in/rachitrajput/" target="_blank" class="clk"><div class="clki">💼</div>linkedin.com/in/rachitrajput</a>
+        </div>
+      </div>
+      <form class="cfm rv" onsubmit="handleSubmit(event)">
+        <div class="fg"><label>Your Name</label><input type="text" placeholder="John Doe" required></div>
+        <div class="fg"><label>Your Email</label><input type="email" placeholder="john@example.com" required></div>
+        <div class="fg"><label>Message</label><textarea placeholder="Tell me about your project..." required></textarea></div>
+        <button type="submit" class="csb">Send Message</button>
+      </form>
+    </div>
+  </div></div>
+</section>
+
+<footer>
+  <p class="fcp">© 2024 Rachit Kumar. Crafted with data & precision.</p>
+  <div class="flks">
+    <a href="mailto:rachitr68@gmail.com">Email</a>
+    <a href="https://www.linkedin.com/in/rachitrajput/" target="_blank">LinkedIn</a>
+    <a href="#hero">↑ Top</a>
+  </div>
+</footer>
+</div> <!-- /human-layout -->
+
+<!-- 2. MACHINE LAYOUT -->
+<div class="machine-layout">
+  <div class="terminal-window">
+    <div class="terminal-header">
+      <span class="t-dot t-red"></span>
+      <span class="t-dot t-yellow"></span>
+      <span class="t-dot t-green"></span>
+      <span class="t-title">rachit_kumar_portfolio_raw_data.json</span>
+    </div>
+    <div class="terminal-body">
+      <div class="cmd-line"><span class="prompt">rachit@analyst:~$</span> cat profile_summary.md</div>
+      <div class="cmd-output"># Rachit Kumar — Senior Data Analyst
+
+> Converting raw data into real decisions — one pipeline at a time.
+* Experience: 4+ Years
+* Primary Stack: Python, SQL, MongoDB, Selenium, Appium
+* Availability: Available for opportunities</div>
+
+      <div class="cmd-line"><span class="prompt">rachit@analyst:~$</span> query_skills_db --format=json</div>
+      <div class="cmd-output">```json
+{
+  "Data & Analytics": [
+    "Python", "Pandas", "NumPy", "SQL", "MongoDB", "JSON"
+  ],
+  "Automation & Testing": [
+    "Selenium", "Appium", "Android Studio", "Web Crawling", "Web Scraping"
+  ],
+  "Infrastructure": [
+    "Linux", "VM"
+  ],
+  "Soft Skills": [
+    "Problem Solving", "Critical Thinking", "Team Leadership"
+  ]
+}
+```</div>
+
+      <div class="cmd-line"><span class="prompt">rachit@analyst:~$</span> select * from experience order by year desc;</div>
+      <div class="cmd-output">| Year | Role | Organization | Core Accomplishments |
+|-----------|----------------------------------|----------------------|-----------------------------------------------------------------------------------------------------------------|
+| 2022-Pres | Senior Data Analyst | Company Name | Led end-to-end data pipeline development, automated reporting with Selenium, managed analyst team |
+| 2021-2022 | Data Analyst | Company Name | Scaled web scrapers in Python, optimized SQL & MongoDB query retrieval, designed analytics dashboards |
+| 2020-2021 | QA Analyst / QA Engineer | Company Name | Automated Android app test suites with Appium, analyzed regressions & performance bottlenecks with Pandas |</div>
+
+      <div class="cmd-line"><span class="prompt">rachit@analyst:~$</span> fetch_projects --all</div>
+      <div class="cmd-output">- **[Project_01] Automated Market Intelligence Pipeline**
+  * Description: daily harvester of competitor pricing using Selenium/Pandas, pushed to MongoDB.
+  * Stack: Python, Selenium, Pandas, MongoDB, Linux
+  * Link: [View Project](#)
+
+- **[Project_02] Android App Test Automation Framework**
+  * Description: mobile testing framework using Appium & Android Studio, reducing QA manual workload by 70%.
+  * Stack: Appium, Android Studio, Python, NumPy, JSON
+  * Link: [View Project](#)
+
+- **[Project_03] Unified SQL & NoSQL Analytics Layer**
+  * Description: normalizes disparate SQL & MongoDB schemas with Pandas transformation scripts for executive dashboards.
+  * Stack: SQL, MongoDB, Python, Pandas, VM
+  * Link: [View Project](#)</div>
+
+      <div class="cmd-line"><span class="prompt">rachit@analyst:~$</span> cat contact_info.txt</div>
+      <div class="cmd-output">* Email: rachitr68@gmail.com
+* LinkedIn: linkedin.com/in/rachitrajput
+* Terminal Link: [Send Message](#contact)</div>
+
+      <div id="termHistory"></div>
+      <div class="term-input-row">
+        <span class="prompt">rachit@analyst:~$</span>
+        <input type="text" id="termInput" placeholder="type 'help' for available commands..." autocomplete="off" spellcheck="false">
+      </div>
+      <div class="term-hint">Available: <span>help</span> · <span>whoami</span> · <span>skills</span> · <span>experience</span> · <span>projects</span> · <span>contact</span> · <span>clear</span> · <span>neofetch</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- 3. VIEW TOGGLE CAPSULE -->
+<div class="toggle-container">
+  <button data-switch-mode="human" class="toggle-btn active">
+    <span class="dot"></span>
+    <span>Human</span>
+  </button>
+  <button data-switch-mode="machine" class="toggle-btn">
+    <span class="dot"></span>
+    <span>Machine</span> <span class="shortcut-hint">/</span>
+  </button>
+</div>
+
+<script>
+// ── Utility: sync renderer to canvas CSS size every frame ──
+function syncSize(canvas, renderer, camera) {
+  const w = canvas.clientWidth, h = canvas.clientHeight;
+  if (!h) return;
+  if (renderer.domElement.width !== w || renderer.domElement.height !== h) {
+    renderer.setSize(w, h, false);
+    if (camera) { camera.aspect = w / h; camera.updateProjectionMatrix(); }
+  }
+}
+
+function makeScene(canvasId) {
+  const canvas = document.getElementById(canvasId);
+  const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+  const scene = new THREE.Scene();
+  return { canvas, renderer, scene };
+}
+
+// ── CURSOR ──
+const cur = document.getElementById('cur'), curr = document.getElementById('curr');
+let mx=0,my=0,rx=0,ry=0;
+document.addEventListener('mousemove', e => { mx=e.clientX; my=e.clientY; cur.style.left=mx+'px'; cur.style.top=my+'px'; });
+(function ac(){rx+=(mx-rx)*.12;ry+=(my-ry)*.12;curr.style.left=rx+'px';curr.style.top=ry+'px';requestAnimationFrame(ac);})();
+document.querySelectorAll('a,button,.skc,.pc,.ast').forEach(el=>{
+  el.addEventListener('mouseenter',()=>{cur.style.width='18px';cur.style.height='18px';curr.style.width='50px';curr.style.height='50px'});
+  el.addEventListener('mouseleave',()=>{cur.style.width='10px';cur.style.height='10px';curr.style.width='34px';curr.style.height='34px'});
+});
+
+// ── HERO 3D: torus knot + icosahedron + floating orbs ──
+(function(){
+  const {canvas,renderer,scene} = makeScene('ch');
+  const camera = new THREE.PerspectiveCamera(60,1,.1,200);
+  camera.position.set(0,0,20);
+
+  const knot = new THREE.Mesh(
+    new THREE.TorusKnotGeometry(4.5,.7,220,20,2,3),
+    new THREE.MeshStandardMaterial({color:0x00f0ff,wireframe:true,transparent:true,opacity:.22,emissive:0x00f0ff,emissiveIntensity:.35})
+  );
+  knot.position.set(9,0,-4); scene.add(knot);
+
+  const ico = new THREE.Mesh(
+    new THREE.IcosahedronGeometry(3,1),
+    new THREE.MeshStandardMaterial({color:0x00b8d4,wireframe:true,transparent:true,opacity:.25,emissive:0x00b8d4,emissiveIntensity:.3})
+  );
+  ico.position.set(-10,2,-5); scene.add(ico);
+
+  const og=new THREE.SphereGeometry(.15,8,8); const orbs=[];
+  const oc=[0x00f0ff,0x00b8d4,0xff6b35,0xffffff];
+  for(let i=0;i<110;i++){
+    const m=new THREE.Mesh(og,new THREE.MeshBasicMaterial({color:oc[i%4],transparent:true,opacity:Math.random()*.6+.2}));
+    const r=Math.random()*24+5,th=Math.random()*Math.PI*2,ph=Math.acos(2*Math.random()-1);
+    m.position.set(r*Math.sin(ph)*Math.cos(th),r*Math.sin(ph)*Math.sin(th)*.5,r*Math.cos(ph)-12);
+    m.userData.s=Math.random()*.003+.001; m.userData.p=Math.random()*Math.PI*2;
+    scene.add(m); orbs.push(m);
+  }
+  const lo=orbs.slice(0,45);
+  for(let i=0;i<lo.length;i++) for(let j=i+1;j<lo.length;j++)
+    if(lo[i].position.distanceTo(lo[j].position)<6)
+      scene.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints([lo[i].position,lo[j].position]),new THREE.LineBasicMaterial({color:0x00f0ff,transparent:true,opacity:.07})));
+
+  const grid=new THREE.GridHelper(70,35,0x00f0ff,0x00f0ff);
+  grid.material.transparent=true; grid.material.opacity=.04; grid.position.y=-10; scene.add(grid);
+
+  scene.add(new THREE.AmbientLight(0x001133,2));
+  const pl1=new THREE.PointLight(0x00f0ff,3,50); pl1.position.set(6,5,10); scene.add(pl1);
+  const pl2=new THREE.PointLight(0xff6b35,2,35); pl2.position.set(-8,-4,5); scene.add(pl2);
+
+  let t=0,hmx=0,hmy=0;
+  document.addEventListener('mousemove',e=>{hmx=(e.clientX/window.innerWidth-.5)*2;hmy=(e.clientY/window.innerHeight-.5)*2;});
+  (function loop(){
+    requestAnimationFrame(loop);
+    if(window.isMachineMode)return;
+    syncSize(canvas,renderer,camera); t+=.007;
+    knot.rotation.x+=.003; knot.rotation.y+=.005;
+    ico.rotation.x+=.004; ico.rotation.z+=.003;
+    orbs.forEach(o=>{o.position.y+=Math.sin(t+o.userData.p)*o.userData.s; o.material.opacity=.2+Math.sin(t*1.5+o.userData.p)*.14;});
+    camera.position.x+=(hmx*2.5-camera.position.x)*.025;
+    camera.position.y+=(-hmy*1.8-camera.position.y)*.025;
+    camera.lookAt(0,0,0); renderer.render(scene,camera);
+  })();
+})();
+
+// ── ABOUT 3D: DNA helix fills the section ──
+(function(){
+  const {canvas,renderer,scene} = makeScene('ca');
+  const camera = new THREE.PerspectiveCamera(55,1,.1,100);
+  camera.position.set(0,0,16);
+
+  const group=new THREE.Group(); scene.add(group);
+  const sg=new THREE.SphereGeometry(.2,10,10);
+  const m1=new THREE.MeshStandardMaterial({color:0x00f0ff,emissive:0x00f0ff,emissiveIntensity:.5});
+  const m2=new THREE.MeshStandardMaterial({color:0xff6b35,emissive:0xff6b35,emissiveIntensity:.4});
+  const lm=new THREE.LineBasicMaterial({color:0x00f0ff,transparent:true,opacity:.28});
+  for(let i=0;i<38;i++){
+    const t=(i/38)*Math.PI*4,r=2.8,h=(i/38)*16-8;
+    const s1=new THREE.Mesh(sg,i%3===0?m1:m2); s1.position.set(Math.cos(t)*r,h,Math.sin(t)*r);
+    const s2=new THREE.Mesh(sg,i%3===0?m2:m1); s2.position.set(Math.cos(t+Math.PI)*r,h,Math.sin(t+Math.PI)*r);
+    group.add(s1); group.add(s2);
+    group.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints([s1.position.clone(),s2.position.clone()]),lm));
+  }
+  scene.add(new THREE.AmbientLight(0x002244,3));
+  const pl=new THREE.PointLight(0x00f0ff,4,35); pl.position.set(0,0,8); scene.add(pl);
+  let t=0;
+  (function loop(){
+    requestAnimationFrame(loop);
+    if(window.isMachineMode)return;
+    syncSize(canvas,renderer,camera); t+=.004; group.rotation.y=t; renderer.render(scene,camera);
+  })();
+})();
+
+// ── SKILLS 3D: floating polyhedra ──
+(function(){
+  const {canvas,renderer,scene} = makeScene('cs');
+  const camera = new THREE.PerspectiveCamera(65,1,.1,200);
+  camera.position.z=22;
+  const geos=[new THREE.OctahedronGeometry(1),new THREE.TetrahedronGeometry(1.1),new THREE.IcosahedronGeometry(1,0),new THREE.BoxGeometry(1.3,1.3,1.3),new THREE.DodecahedronGeometry(1)];
+  const shapes=[];
+  for(let i=0;i<26;i++){
+    const m=new THREE.Mesh(geos[i%geos.length],new THREE.MeshStandardMaterial({color:0x00f0ff,wireframe:true,transparent:true,opacity:Math.random()*.28+.08,emissive:0x00b8d4,emissiveIntensity:.25}));
+    m.position.set((Math.random()-.5)*44,(Math.random()-.5)*28,(Math.random()-.5)*14-6);
+    m.rotation.set(Math.random()*Math.PI,Math.random()*Math.PI,0);
+    m.userData.rv={x:(Math.random()-.5)*.007,y:(Math.random()-.5)*.007};
+    m.scale.setScalar(Math.random()*1.6+.5);
+    scene.add(m); shapes.push(m);
+  }
+  scene.add(new THREE.AmbientLight(0x001133,2));
+  scene.add(new THREE.PointLight(0x00f0ff,2,80));
+  (function loop(){
+    requestAnimationFrame(loop);
+    if(window.isMachineMode)return;
+    syncSize(canvas,renderer,camera); shapes.forEach(s=>{s.rotation.x+=s.userData.rv.x;s.rotation.y+=s.userData.rv.y;}); renderer.render(scene,camera);
+  })();
+})();
+
+// ── EXPERIENCE 3D: nested rotating cubes ──
+(function(){
+  const {canvas,renderer,scene} = makeScene('ce');
+  const camera = new THREE.PerspectiveCamera(55,1,.1,100);
+  camera.position.set(0,0,18);
+  const group=new THREE.Group(); scene.add(group);
+  [3,5,7,9].forEach((size,i)=>{
+    const m=new THREE.Mesh(new THREE.BoxGeometry(size,size,size),new THREE.MeshStandardMaterial({color:i%2===0?0x00f0ff:0x00b8d4,wireframe:true,transparent:true,opacity:.15-i*.03,emissive:i%2===0?0x00f0ff:0x00b8d4,emissiveIntensity:.12}));
+    m.userData.sp=(i+1)*.0025*(i%2===0?1:-1); group.add(m);
+  });
+  const ring=new THREE.Mesh(new THREE.TorusGeometry(7,.055,8,90),new THREE.MeshBasicMaterial({color:0x00f0ff,transparent:true,opacity:.12}));
+  ring.rotation.x=Math.PI/2; group.add(ring);
+  scene.add(new THREE.AmbientLight(0x001133,2));
+  const pl=new THREE.PointLight(0x00f0ff,4,45); pl.position.set(5,5,10); scene.add(pl);
+  let t=0;
+  (function loop(){
+    requestAnimationFrame(loop);
+    if(window.isMachineMode)return;
+    syncSize(canvas,renderer,camera); t+=.006;
+    group.children.forEach(c=>{if(c.userData.sp){c.rotation.x+=c.userData.sp;c.rotation.y+=c.userData.sp*.7;}});
+    group.rotation.y=Math.sin(t)*.25; ring.rotation.z=t; renderer.render(scene,camera);
+  })();
+})();
+
+// ── PROJECTS 3D: node network ──
+(function(){
+  const {canvas,renderer,scene} = makeScene('cp');
+  const camera = new THREE.PerspectiveCamera(60,1,.1,200);
+  camera.position.z=24;
+  const ng=new THREE.SphereGeometry(.22,10,10); const nodes=[];
+  for(let i=0;i<55;i++){
+    const m=new THREE.Mesh(ng,new THREE.MeshBasicMaterial({color:i%2===0?0x00f0ff:0xff6b35,transparent:true,opacity:Math.random()*.55+.2}));
+    m.position.set((Math.random()-.5)*42,(Math.random()-.5)*26,(Math.random()-.5)*12-8);
+    m.userData.vy=(Math.random()-.5)*.012; m.userData.ph=Math.random()*Math.PI*2;
+    scene.add(m); nodes.push(m);
+  }
+  for(let i=0;i<nodes.length;i++) for(let j=i+1;j<nodes.length;j++)
+    if(nodes[i].position.distanceTo(nodes[j].position)<9)
+      scene.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints([nodes[i].position,nodes[j].position]),new THREE.LineBasicMaterial({color:0x00f0ff,transparent:true,opacity:.06})));
+  scene.add(new THREE.AmbientLight(0x001133,1));
+  const pl=new THREE.PointLight(0x00f0ff,2,70); pl.position.set(0,0,12); scene.add(pl);
+  let t=0;
+  (function loop(){
+    requestAnimationFrame(loop);
+    if(window.isMachineMode)return;
+    syncSize(canvas,renderer,camera); t+=.005; nodes.forEach(n=>{n.position.y+=Math.sin(t+n.userData.ph)*n.userData.vy;}); renderer.render(scene,camera);
+  })();
+})();
+
+// ── CONTACT 3D: particle sphere + rings ──
+(function(){
+  const {canvas,renderer,scene} = makeScene('cc');
+  const camera = new THREE.PerspectiveCamera(55,1,.1,100);
+  camera.position.z=18;
+  const count=2800; const pos=new Float32Array(count*3);
+  for(let i=0;i<count;i++){const th=Math.random()*Math.PI*2,ph=Math.acos(2*Math.random()-1),r=5+(Math.random()-.5)*2;pos[i*3]=r*Math.sin(ph)*Math.cos(th);pos[i*3+1]=r*Math.sin(ph)*Math.sin(th);pos[i*3+2]=r*Math.cos(ph);}
+  const pg=new THREE.BufferGeometry(); pg.setAttribute('position',new THREE.BufferAttribute(pos,3));
+  const pts=new THREE.Points(pg,new THREE.PointsMaterial({color:0x00f0ff,size:.055,transparent:true,opacity:.55})); scene.add(pts);
+  scene.add(new THREE.Mesh(new THREE.SphereGeometry(3.5,32,32),new THREE.MeshStandardMaterial({color:0x000d1a,transparent:true,opacity:.85})));
+  const ring=new THREE.Mesh(new THREE.TorusGeometry(5.5,.05,8,110),new THREE.MeshBasicMaterial({color:0x00f0ff,transparent:true,opacity:.42}));
+  ring.rotation.x=Math.PI/3; scene.add(ring);
+  const ring2=new THREE.Mesh(new THREE.TorusGeometry(4.2,.04,8,90),new THREE.MeshBasicMaterial({color:0xff6b35,transparent:true,opacity:.3}));
+  ring2.rotation.x=-Math.PI/4; ring2.rotation.z=Math.PI/5; scene.add(ring2);
+  scene.add(new THREE.AmbientLight(0x001133,2));
+  const pl=new THREE.PointLight(0x00f0ff,3,35); pl.position.set(0,0,8); scene.add(pl);
+  let t=0;
+  (function loop(){
+    requestAnimationFrame(loop);
+    if(window.isMachineMode)return;
+    syncSize(canvas,renderer,camera); t+=.004; pts.rotation.y=t; pts.rotation.x=t*.28; ring.rotation.z=t*.45; ring2.rotation.y=-t*.6; renderer.render(scene,camera);
+  })();
+})();
+
+// ── SKILL CARD TILT ──
+document.querySelectorAll('.skc').forEach(card=>{
+  card.addEventListener('mousemove',e=>{
+    const r=card.getBoundingClientRect();
+    const x=(e.clientX-r.left)/r.width-.5, y=(e.clientY-r.top)/r.height-.5;
+    card.style.transform=`perspective(600px) translateY(-8px) rotateX(${y*-12}deg) rotateY(${x*12}deg)`;
+    card.style.setProperty('--mx',((x+.5)*100)+'%'); card.style.setProperty('--my',((y+.5)*100)+'%');
+  });
+  card.addEventListener('mouseleave',()=>{card.style.transform='';});
+});
+document.querySelectorAll('.pc').forEach(card=>{
+  card.addEventListener('mousemove',e=>{
+    if(!card.classList.contains('vis')) return;
+    const r=card.getBoundingClientRect();
+    const x=(e.clientX-r.left)/r.width-.5, y=(e.clientY-r.top)/r.height-.5;
+    card.style.transform=`perspective(700px) translateY(-10px) rotateX(${y*-7}deg) rotateY(${x*7}deg)`;
+  });
+  card.addEventListener('mouseleave',()=>{if(card.classList.contains('vis'))card.style.transform='translateY(0)';});
+});
+document.querySelectorAll('.ast').forEach(card=>{
+  card.addEventListener('mousemove',e=>{
+    const r=card.getBoundingClientRect();
+    const x=(e.clientX-r.left)/r.width-.5, y=(e.clientY-r.top)/r.height-.5;
+    card.style.transform=`perspective(400px) translateY(-6px) rotateX(${y*-10}deg) rotateY(${x*10}deg)`;
+  });
+  card.addEventListener('mouseleave',()=>{card.style.transform='';});
+});
+
+// ── SCROLL REVEAL ──
+const obs=new IntersectionObserver(entries=>{
+  entries.forEach((e,i)=>{if(e.isIntersecting)setTimeout(()=>e.target.classList.add('vis'),i*75);});
+},{threshold:.1});
+document.querySelectorAll('.rv,.ti,.pc').forEach(el=>obs.observe(el));
+
+// ── NAV ACTIVE ──
+const secs=document.querySelectorAll('section[id]');
+window.addEventListener('scroll',()=>{
+  let cur=''; secs.forEach(s=>{if(window.scrollY>=s.offsetTop-85)cur=s.id;});
+  document.querySelectorAll('.nls a').forEach(a=>a.classList.toggle('on',a.getAttribute('href')==='#'+cur));
+});
+
+// ── FORM ──
+function handleSubmit(e){
+  e.preventDefault();
+  const btn=e.target.querySelector('.csb');
+  btn.textContent='Sent ✓'; btn.style.background='#00b894';
+  setTimeout(()=>{btn.textContent='Send Message';btn.style.background='';e.target.reset();},3000);
+}
+
+// ── MOBILE MENU ──
+document.querySelectorAll('.nls a').forEach(a=>a.addEventListener('click',()=>document.getElementById('nls').classList.remove('open')));
+
+// ── VIEW MODE TOGGLE (HUMAN / MACHINE) ──
+window.isMachineMode = false;
+let isTransitioning = false;
+
+// Create the transition overlay element
+const transOverlay = document.createElement('div');
+transOverlay.className = 'view-transition-overlay';
+document.body.appendChild(transOverlay);
+
+function setViewMode(mode, animate) {
+  const body = document.body;
+  const btnHuman = document.querySelector('[data-switch-mode="human"]');
+  const btnMachine = document.querySelector('[data-switch-mode="machine"]');
+  const humanLayout = document.querySelector('.human-layout');
+  const machineLayout = document.querySelector('.machine-layout');
+
+  // Update button states immediately
+  if (mode === 'machine') {
+    btnMachine.classList.add('active');
+    btnHuman.classList.remove('active');
+    window.isMachineMode = true;
+  } else {
+    btnHuman.classList.add('active');
+    btnMachine.classList.remove('active');
+    window.isMachineMode = false;
+  }
+  localStorage.setItem('preferred-view', mode);
+
+  // --- INSTANT (no animation, used on first page load) ---
+  if (!animate) {
+    if (mode === 'machine') {
+      body.classList.add('machine');
+    } else {
+      body.classList.remove('machine');
+    }
+    // Clean up any leftover transition classes
+    humanLayout.classList.remove('fading-out','fading-in','reveal');
+    machineLayout.classList.remove('fading-out','fading-in','reveal');
+    return;
+  }
+
+  // --- ANIMATED CROSSFADE ---
+  if (isTransitioning) return;
+  isTransitioning = true;
+
+  // Determine outgoing and incoming
+  const outgoing = mode === 'machine' ? humanLayout : machineLayout;
+  const incoming = mode === 'machine' ? machineLayout : humanLayout;
+
+  // Step 1: Flash the overlay & fade out current view
+  transOverlay.classList.add('active');
+  outgoing.classList.add('fading-out');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+
+  setTimeout(() => {
+    // Step 2: Swap the body state and prepare the incoming layout
+    if (mode === 'machine') {
+      body.classList.add('machine');
+    } else {
+      body.classList.remove('machine');
+    }
+    outgoing.classList.remove('fading-out');
+
+    // Prepare incoming: make it visible but transparent
+    incoming.classList.add('fading-in');
+
+    // Force reflow so the browser registers the initial state
+    void incoming.offsetHeight;
+
+    // Step 3: Reveal the incoming layout
+    incoming.classList.add('reveal');
+    transOverlay.classList.remove('active');
+
+    setTimeout(() => {
+      // Step 4: Clean up all transition classes
+      incoming.classList.remove('fading-in', 'reveal');
+      isTransitioning = false;
+    }, 500);
+  }, 380);
+}
+
+// Event listeners for toggle buttons
+document.querySelectorAll('[data-switch-mode]').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const targetMode = btn.getAttribute('data-switch-mode');
+    if ((targetMode === 'machine') === window.isMachineMode) return; // already in that mode
+    setViewMode(targetMode, true);
+  });
+});
+
+// Keypress shortcut (Press '/' to toggle)
+window.addEventListener('keydown', (e) => {
+  if (e.key === '/') {
+    const active = document.activeElement;
+    if (active && (active.tagName === 'INPUT' || active.tagName === 'TEXTAREA')) return;
+    e.preventDefault();
+    setViewMode(window.isMachineMode ? 'human' : 'machine', true);
+  }
+});
+
+// Load preferences on page load (instant, no animation)
+window.addEventListener('DOMContentLoaded', () => {
+  const savedView = localStorage.getItem('preferred-view') || 'human';
+  setViewMode(savedView, false);
+});
+
+// ── INTERACTIVE TERMINAL ──
+(function() {
+  const termInput = document.getElementById('termInput');
+  const termHistory = document.getElementById('termHistory');
+  if (!termInput || !termHistory) return;
+
+  const cmdHistory = [];
+  let historyIndex = -1;
+
+  // Command registry
+  const commands = {
+    help: () =>
+`Available commands:
+  help          Show this help message
+  whoami        Display profile summary
+  skills        List technical skills (JSON)
+  experience    Show work experience timeline
+  projects      Fetch project portfolio
+  contact       Display contact information
+  neofetch      System info (hacker style)
+  clear         Clear terminal history
+  date          Current date & time
+  uptime        Session uptime
+  echo [text]   Echo back text
+  sudo hire me  ;)`,
+
+    whoami: () =>
+`┌─────────────────────────────────────────┐
+│  Rachit Kumar                           │
+│  Senior Data Analyst · 4+ Years Exp.    │
+│                                         │
+│  "Turning raw data into real decisions  │
+│   — one pipeline at a time."            │
+│                                         │
+│  Stack: Python · SQL · MongoDB          │
+│         Selenium · Pandas · Appium      │
+│  Status: Available for opportunities    │
+└─────────────────────────────────────────┘`,
+
+    skills: () =>
+`{
+  "Data & Analytics": [
+    "Python", "Pandas", "NumPy", "SQL", "MongoDB", "JSON"
+  ],
+  "Automation & Testing": [
+    "Selenium", "Appium", "Android Studio",
+    "Web Crawling", "Web Scraping"
+  ],
+  "Infrastructure": [
+    "Linux", "VM"
+  ],
+  "Soft Skills": [
+    "Problem Solving", "Critical Thinking", "Team Leadership"
+  ]
+}`,
+
+    experience: () =>
+`┌───────────┬──────────────────────────────┬──────────────┐
+│ Year      │ Role                         │ Company      │
+├───────────┼──────────────────────────────┼──────────────┤
+│ 2022-Pres │ Senior Data Analyst          │ Company Name │
+│           │ → Led data pipeline dev      │              │
+│           │ → Managed analyst team       │              │
+├───────────┼──────────────────────────────┼──────────────┤
+│ 2021-2022 │ Data Analyst                 │ Company Name │
+│           │ → Scaled web scrapers        │              │
+│           │ → Designed SQL dashboards    │              │
+├───────────┼──────────────────────────────┼──────────────┤
+│ 2020-2021 │ Jr. Data Analyst / QA Eng.   │ Company Name │
+│           │ → Automated Android tests    │              │
+│           │ → Pandas/NumPy analysis      │              │
+└───────────┴──────────────────────────────┴──────────────┘`,
+
+    projects: () =>
+`[01] Automated Market Intelligence Pipeline
+     ├─ Tech: Python, Selenium, Pandas, MongoDB, Linux
+     └─ Daily competitor pricing harvester → MongoDB dashboards
+
+[02] Android App Test Automation Framework
+     ├─ Tech: Appium, Android Studio, Python, NumPy, JSON
+     └─ Reduced manual QA workload by 70%
+
+[03] Unified SQL & NoSQL Analytics Layer
+     ├─ Tech: SQL, MongoDB, Python, Pandas, VM
+     └─ Cross-source executive reporting pipeline`,
+
+    contact: () =>
+`+---------------------------------------------+
+|  [mail]  rachitr68@gmail.com                |
+|  [link]  linkedin.com/in/rachitrajput       |
+|                                             |
+|  Open to: Data roles >> Automation work     |
+|           Freelance >> Full-time            |
++---------------------------------------------+`,
+
+    neofetch: () => {
+      const now = new Date();
+      return `
+        ██████╗ ██╗  ██╗
+        ██╔══██╗██║ ██╔╝    rachit@analyst
+        ██████╔╝█████╔╝     ──────────────
+        ██╔══██╗██╔═██╗     OS: Data Pipeline OS v4.0
+        ██║  ██║██║  ██╗    Host: Portfolio Terminal
+        ╚═╝  ╚═╝╚═╝  ╚═╝    Kernel: Python 3.12
+                             Uptime: 4+ years
+                             Packages: Pandas, NumPy, Selenium
+                             Shell: bash 5.2
+                             Resolution: Full-Stack Analytics
+                             Terminal: rachit-term v1.0
+                             CPU: Problem Solving @ ∞GHz
+                             Memory: ∞ Rows Processed
+                             Local Time: ${now.toLocaleString()}`;
+    },
+
+    clear: () => '__CLEAR__',
+
+    date: () => new Date().toString(),
+
+    uptime: () => {
+      const start = window._termStart || Date.now();
+      const diff = Math.floor((Date.now() - start) / 1000);
+      const m = Math.floor(diff / 60);
+      const s = diff % 60;
+      return `Session uptime: ${m}m ${s}s`;
+    },
+
+    'sudo hire me': () =>
+`
+  >> Great choice! Sending hiring request...
+  ========================================
+  [################################] 100%
+  [OK] Request received!
+
+  [mail] Drop a message: rachitr68@gmail.com
+  [link] Or connect: linkedin.com/in/rachitrajput
+`,
+  };
+
+  window._termStart = Date.now();
+  let isStreaming = false;
+
+  function processCommand(raw) {
+    const trimmed = raw.trim();
+    if (!trimmed) return;
+    if (isStreaming) return; // block input while streaming
+
+    cmdHistory.push(trimmed);
+    historyIndex = cmdHistory.length;
+
+    // Append the command echo
+    const cmdEl = document.createElement('div');
+    cmdEl.className = 'cmd-line';
+    cmdEl.innerHTML = '<span class="prompt">rachit@analyst:~$</span> ' + escapeHTML(trimmed);
+    termHistory.appendChild(cmdEl);
+
+    // Resolve the output
+    let output;
+    if (trimmed.toLowerCase().startsWith('echo ')) {
+      output = trimmed.slice(5);
+    } else {
+      const handler = commands[trimmed.toLowerCase()];
+      if (handler) {
+        output = typeof handler === 'function' ? handler() : handler;
+      } else {
+        output = `bash: ${trimmed.split(' ')[0]}: command not found. Type 'help' for available commands.`;
+      }
+    }
+
+    // Special: clear
+    if (output === '__CLEAR__') {
+      termHistory.innerHTML = '';
+      return;
+    }
+
+    // Stream the output character by character
+    streamOutput(output);
+  }
+
+  function streamOutput(text) {
+    isStreaming = true;
+    termInput.disabled = true;
+    termInput.placeholder = '⏳ streaming...';
+
+    const outEl = document.createElement('div');
+    outEl.className = 'cmd-output';
+    termHistory.appendChild(outEl);
+
+    // Add a blinking cursor at end of output
+    const streamCursor = document.createElement('span');
+    streamCursor.className = 'stream-cursor';
+    streamCursor.textContent = '▌';
+    outEl.appendChild(streamCursor);
+
+    const chars = text.split('');
+    let i = 0;
+    const termBody = termHistory.closest('.terminal-body');
+
+    // Adaptive speed: shorter texts stream slower (more dramatic),
+    // longer texts stream faster so users don't wait forever.
+    const len = chars.length;
+    let baseDelay;
+    if (len < 80) baseDelay = 22;
+    else if (len < 300) baseDelay = 12;
+    else if (len < 600) baseDelay = 6;
+    else baseDelay = 3;
+
+    function typeNext() {
+      if (i >= chars.length) {
+        // Done streaming — remove cursor, re-enable input
+        streamCursor.remove();
+        isStreaming = false;
+        termInput.disabled = false;
+        termInput.placeholder = "type 'help' for available commands...";
+        termInput.focus();
+        return;
+      }
+
+      // Insert text node before the cursor
+      const charNode = document.createTextNode(chars[i]);
+      outEl.insertBefore(charNode, streamCursor);
+      i++;
+
+      // Auto-scroll
+      if (termBody) termBody.scrollTop = termBody.scrollHeight;
+
+      // Variable delay: newlines get a slight pause for readability
+      let delay = baseDelay;
+      if (chars[i - 1] === '\n') delay = baseDelay + 30;
+      // Punctuation gets a tiny pause
+      else if ('.!?:'.includes(chars[i - 1])) delay = baseDelay + 15;
+
+      setTimeout(typeNext, delay);
+    }
+
+    typeNext();
+  }
+
+  function escapeHTML(str) {
+    return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  }
+
+  termInput.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      processCommand(termInput.value);
+      termInput.value = '';
+    } else if (e.key === 'ArrowUp') {
+      e.preventDefault();
+      if (historyIndex > 0) {
+        historyIndex--;
+        termInput.value = cmdHistory[historyIndex];
+      }
+    } else if (e.key === 'ArrowDown') {
+      e.preventDefault();
+      if (historyIndex < cmdHistory.length - 1) {
+        historyIndex++;
+        termInput.value = cmdHistory[historyIndex];
+      } else {
+        historyIndex = cmdHistory.length;
+        termInput.value = '';
+      }
+    }
+  });
+
+  // Stop '/' from toggling the view when typing in the terminal
+  termInput.addEventListener('keydown', (e) => {
+    e.stopPropagation();
+  });
+
+  // Auto-focus terminal input when machine mode is activated
+  const observer = new MutationObserver(() => {
+    if (document.body.classList.contains('machine')) {
+      setTimeout(() => termInput.focus(), 500);
+    }
+  });
+  observer.observe(document.body, { attributes: true, attributeFilter: ['class'] });
+
+  // Click anywhere in terminal body to focus input
+  const termBody = document.querySelector('.machine-layout .terminal-body');
+  if (termBody) {
+    termBody.addEventListener('click', () => termInput.focus());
+  }
+})();
+</script>
+</body>
+</html>
