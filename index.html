@@ -91,10 +91,10 @@ section{position:relative;overflow:hidden}
 .ti.vis{opacity:1;transform:none}
 .td{position:absolute;left:-1.97rem;top:5px;width:14px;height:14px;background:var(--bg);border:2px solid var(--cyan);border-radius:50%;box-shadow:0 0 12px var(--cglow);transition:background .3s}
 .ti:hover .td{background:var(--cyan)}
-.tdt{font-family:var(--fm);font-size:.66rem;color:var(--cyan);letter-spacing:.15em;text-transform:uppercase;margin-bottom:.35rem}
-.tr{font-family:var(--fh);font-size:1.15rem;font-weight:700;color:var(--text);margin-bottom:.15rem}
-.tc{font-family:var(--fm);font-size:.75rem;color:var(--muted);margin-bottom:.65rem}
-.tb{background:rgba(0,240,255,.025);border:1px solid var(--bdr);border-radius:7px;padding:1.4rem;transition:border-color .3s,box-shadow .3s,transform .35s;transform-style:preserve-3d}
+.tdt{font-family:var(--fm);font-size:.66rem;color:var(--cyan);letter-spacing:.15em;text-transform:uppercase;margin-bottom:.35rem;position:relative;z-index:3}
+.tr{font-family:var(--fh);font-size:1.15rem;font-weight:700;color:var(--text);margin-bottom:.15rem;position:relative;z-index:3}
+.tc{font-family:var(--fm);font-size:.75rem;color:var(--muted);margin-bottom:.65rem;position:relative;z-index:3}
+.tb{background:rgba(4,8,15,.92);border:1px solid var(--bdr);border-radius:7px;padding:1.4rem;transition:border-color .3s,box-shadow .3s,transform .35s;transform-style:preserve-3d;position:relative;z-index:3}
 .ti:hover .tb{border-color:rgba(0,240,255,.28);box-shadow:0 8px 35px rgba(0,0,0,.3),0 0 18px var(--cglow);transform:translateX(5px) rotateY(-2deg)}
 .tdsc{color:var(--muted);font-size:.9rem;line-height:1.8}
 
@@ -138,6 +138,209 @@ footer{background:var(--bg);border-top:1px solid var(--bdr);padding:2rem 6vw;dis
 .flks a{font-family:var(--fm);font-size:.66rem;color:var(--muted);text-decoration:none;transition:color .2s}
 .flks a:hover{color:var(--cyan)}
 
+/* --- VIEW TOGGLE --- */
+.toggle-container {
+  position: fixed;
+  bottom: 2rem;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(6, 13, 26, 0.85);
+  backdrop-filter: blur(18px);
+  border: 1px solid var(--bdr);
+  padding: 4px;
+  border-radius: 999px;
+  display: flex;
+  gap: 4px;
+  z-index: 9999;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4), 0 0 12px var(--cglow);
+}
+.toggle-btn {
+  background: transparent;
+  border: none;
+  color: var(--muted);
+  padding: .5rem 1.2rem;
+  border-radius: 999px;
+  font-family: var(--fm);
+  font-size: .72rem;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: .5rem;
+  transition: all .25s ease;
+}
+.toggle-btn .dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: currentColor;
+  display: inline-block;
+  outline: 1px solid currentColor;
+  outline-offset: 2px;
+}
+.toggle-btn.active {
+  background: var(--cyan);
+  color: var(--bg);
+  box-shadow: 0 0 15px var(--cglow);
+}
+.shortcut-hint {
+  font-size: .62rem;
+  opacity: .5;
+  margin-left: 2px;
+}
+
+/* --- TWIN DOM OVERLAYS --- */
+.human-layout {
+  opacity: 1;
+  transform: scale(1);
+  transition: opacity .45s ease, transform .45s ease;
+}
+.machine-layout {
+  display: none;
+  opacity: 0;
+  transform: translateY(18px);
+  transition: opacity .5s ease .05s, transform .5s ease .05s;
+}
+
+body.machine .human-layout { display: none; opacity: 0; transform: scale(.98); }
+body.machine .machine-layout { display: block; opacity: 1; transform: translateY(0); }
+body.machine { background: #020408 !important; cursor: auto; }
+body.machine .sc { display: none; }
+body.machine #cur, body.machine #curr { display: none; }
+
+/* --- TRANSITION OVERLAY FLASH --- */
+.view-transition-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 99998;
+  pointer-events: none;
+  background: radial-gradient(circle at 50% 50%, rgba(0,240,255,.12), transparent 70%);
+  opacity: 0;
+  transition: opacity .35s ease;
+}
+.view-transition-overlay.active {
+  opacity: 1;
+}
+
+/* Layout states during animated transition */
+.human-layout.fading-out {
+  opacity: 0;
+  transform: scale(.97);
+  transition: opacity .35s ease, transform .35s ease;
+}
+.machine-layout.fading-in {
+  display: block;
+  opacity: 0;
+  transform: translateY(18px);
+}
+.machine-layout.fading-in.reveal {
+  opacity: 1;
+  transform: translateY(0);
+  transition: opacity .45s ease, transform .45s ease;
+}
+.machine-layout.fading-out {
+  opacity: 0;
+  transform: translateY(12px);
+  transition: opacity .35s ease, transform .35s ease;
+}
+.human-layout.fading-in {
+  display: block;
+  opacity: 0;
+  transform: scale(.97);
+}
+.human-layout.fading-in.reveal {
+  opacity: 1;
+  transform: scale(1);
+  transition: opacity .45s ease, transform .45s ease;
+}
+
+/* --- TERMINAL STYLING --- */
+.terminal-window {
+  max-width: 900px;
+  width: 90vw;
+  margin: 60px auto 140px;
+  background: #03060b;
+  border: 1px solid var(--bdr);
+  border-radius: 8px;
+  box-shadow: 0 20px 80px rgba(0, 0, 0, 0.7), 0 0 40px rgba(0, 240, 255, 0.03);
+  overflow: hidden;
+  font-family: var(--fm);
+}
+.terminal-header {
+  background: rgba(6, 13, 26, 0.9);
+  border-bottom: 1px solid var(--bdr);
+  padding: .75rem 1.2rem;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.t-dot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; }
+.t-red { background: #ff5f56; }
+.t-yellow { background: #ffbd2e; }
+.t-green { background: #27c93f; }
+.t-title { color: var(--muted); font-size: .72rem; margin-left: 10px; letter-spacing: .05em; }
+.terminal-body {
+  padding: 2rem;
+  color: var(--text);
+  font-size: .88rem;
+  line-height: 1.7;
+  max-height: 75vh;
+  overflow-y: auto;
+}
+.cmd-line { display: flex; align-items: center; gap: .7rem; color: var(--cyan); margin-bottom: .6rem; }
+.cmd-line .prompt { color: var(--muted); }
+.cmd-output {
+  color: #a0c2d6;
+  margin-bottom: 2.2rem;
+  white-space: pre-wrap;
+}
+.cmd-output pre {
+  font-family: var(--fm);
+  font-size: .85rem;
+  color: var(--cyan2);
+}
+.blink { animation: blink 1s step-end infinite; }
+@keyframes blink { 50% { opacity: 0; } }
+
+/* --- INTERACTIVE TERMINAL INPUT --- */
+.term-input-row {
+  display: flex;
+  align-items: center;
+  gap: .7rem;
+  color: var(--cyan);
+  margin-top: .6rem;
+}
+.term-input-row .prompt { color: var(--muted); white-space: nowrap; }
+#termInput {
+  flex: 1;
+  background: transparent;
+  border: none;
+  outline: none;
+  color: var(--cyan);
+  font-family: var(--fm);
+  font-size: .88rem;
+  caret-color: var(--cyan);
+  letter-spacing: .03em;
+}
+#termInput::placeholder { color: rgba(0,240,255,.25); }
+.term-hint {
+  margin-top: 1.2rem;
+  font-size: .72rem;
+  color: var(--muted);
+  opacity: .6;
+}
+.term-hint span { color: var(--cyan); }
+
+/* --- STREAMING CURSOR --- */
+.stream-cursor {
+  color: var(--cyan);
+  animation: blink .6s step-end infinite;
+  font-weight: bold;
+  margin-left: 1px;
+}
+.cmd-output { transition: none; }
+
 .rv{opacity:0;transform:translateY(26px);transition:opacity .65s,transform .65s}
 .rv.vis{opacity:1;transform:none}
 @keyframes fu{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:none}}
@@ -157,6 +360,7 @@ footer{background:var(--bg);border-top:1px solid var(--bdr);padding:2rem 6vw;dis
 <div id="cur"></div>
 <div id="curr"></div>
 
+<div class="human-layout">
 <nav>
   <a href="#hero" class="nl">RK<span>.</span></a>
   <ul class="nls" id="nls">
@@ -284,6 +488,93 @@ footer{background:var(--bg);border-top:1px solid var(--bdr);padding:2rem 6vw;dis
     <a href="#hero">↑ Top</a>
   </div>
 </footer>
+</div> <!-- /human-layout -->
+
+<!-- 2. MACHINE LAYOUT -->
+<div class="machine-layout">
+  <div class="terminal-window">
+    <div class="terminal-header">
+      <span class="t-dot t-red"></span>
+      <span class="t-dot t-yellow"></span>
+      <span class="t-dot t-green"></span>
+      <span class="t-title">rachit_kumar_portfolio_raw_data.json</span>
+    </div>
+    <div class="terminal-body">
+      <div class="cmd-line"><span class="prompt">rachit@analyst:~$</span> cat profile_summary.md</div>
+      <div class="cmd-output"># Rachit Kumar — Senior Data Analyst
+
+> Converting raw data into real decisions — one pipeline at a time.
+* Experience: 4+ Years
+* Primary Stack: Python, SQL, MongoDB, Selenium, Appium
+* Availability: Available for opportunities</div>
+
+      <div class="cmd-line"><span class="prompt">rachit@analyst:~$</span> query_skills_db --format=json</div>
+      <div class="cmd-output">```json
+{
+  "Data & Analytics": [
+    "Python", "Pandas", "NumPy", "SQL", "MongoDB", "JSON"
+  ],
+  "Automation & Testing": [
+    "Selenium", "Appium", "Android Studio", "Web Crawling", "Web Scraping"
+  ],
+  "Infrastructure": [
+    "Linux", "VM"
+  ],
+  "Soft Skills": [
+    "Problem Solving", "Critical Thinking", "Team Leadership"
+  ]
+}
+```</div>
+
+      <div class="cmd-line"><span class="prompt">rachit@analyst:~$</span> select * from experience order by year desc;</div>
+      <div class="cmd-output">| Year | Role | Organization | Core Accomplishments |
+|-----------|----------------------------------|----------------------|-----------------------------------------------------------------------------------------------------------------|
+| 2022-Pres | Senior Data Analyst | Company Name | Led end-to-end data pipeline development, automated reporting with Selenium, managed analyst team |
+| 2021-2022 | Data Analyst | Company Name | Scaled web scrapers in Python, optimized SQL & MongoDB query retrieval, designed analytics dashboards |
+| 2020-2021 | QA Analyst / QA Engineer | Company Name | Automated Android app test suites with Appium, analyzed regressions & performance bottlenecks with Pandas |</div>
+
+      <div class="cmd-line"><span class="prompt">rachit@analyst:~$</span> fetch_projects --all</div>
+      <div class="cmd-output">- **[Project_01] Automated Market Intelligence Pipeline**
+  * Description: daily harvester of competitor pricing using Selenium/Pandas, pushed to MongoDB.
+  * Stack: Python, Selenium, Pandas, MongoDB, Linux
+  * Link: [View Project](#)
+
+- **[Project_02] Android App Test Automation Framework**
+  * Description: mobile testing framework using Appium & Android Studio, reducing QA manual workload by 70%.
+  * Stack: Appium, Android Studio, Python, NumPy, JSON
+  * Link: [View Project](#)
+
+- **[Project_03] Unified SQL & NoSQL Analytics Layer**
+  * Description: normalizes disparate SQL & MongoDB schemas with Pandas transformation scripts for executive dashboards.
+  * Stack: SQL, MongoDB, Python, Pandas, VM
+  * Link: [View Project](#)</div>
+
+      <div class="cmd-line"><span class="prompt">rachit@analyst:~$</span> cat contact_info.txt</div>
+      <div class="cmd-output">* Email: rachitr68@gmail.com
+* LinkedIn: linkedin.com/in/rachitrajput
+* Terminal Link: [Send Message](#contact)</div>
+
+      <div id="termHistory"></div>
+      <div class="term-input-row">
+        <span class="prompt">rachit@analyst:~$</span>
+        <input type="text" id="termInput" placeholder="type 'help' for available commands..." autocomplete="off" spellcheck="false">
+      </div>
+      <div class="term-hint">Available: <span>help</span> · <span>whoami</span> · <span>skills</span> · <span>experience</span> · <span>projects</span> · <span>contact</span> · <span>clear</span> · <span>neofetch</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- 3. VIEW TOGGLE CAPSULE -->
+<div class="toggle-container">
+  <button data-switch-mode="human" class="toggle-btn active">
+    <span class="dot"></span>
+    <span>Human</span>
+  </button>
+  <button data-switch-mode="machine" class="toggle-btn">
+    <span class="dot"></span>
+    <span>Machine</span> <span class="shortcut-hint">/</span>
+  </button>
+</div>
 
 <script>
 // ── Utility: sync renderer to canvas CSS size every frame ──
@@ -356,7 +647,9 @@ document.querySelectorAll('a,button,.skc,.pc,.ast').forEach(el=>{
   let t=0,hmx=0,hmy=0;
   document.addEventListener('mousemove',e=>{hmx=(e.clientX/window.innerWidth-.5)*2;hmy=(e.clientY/window.innerHeight-.5)*2;});
   (function loop(){
-    requestAnimationFrame(loop); syncSize(canvas,renderer,camera); t+=.007;
+    requestAnimationFrame(loop);
+    if(window.isMachineMode)return;
+    syncSize(canvas,renderer,camera); t+=.007;
     knot.rotation.x+=.003; knot.rotation.y+=.005;
     ico.rotation.x+=.004; ico.rotation.z+=.003;
     orbs.forEach(o=>{o.position.y+=Math.sin(t+o.userData.p)*o.userData.s; o.material.opacity=.2+Math.sin(t*1.5+o.userData.p)*.14;});
@@ -387,7 +680,11 @@ document.querySelectorAll('a,button,.skc,.pc,.ast').forEach(el=>{
   scene.add(new THREE.AmbientLight(0x002244,3));
   const pl=new THREE.PointLight(0x00f0ff,4,35); pl.position.set(0,0,8); scene.add(pl);
   let t=0;
-  (function loop(){requestAnimationFrame(loop); syncSize(canvas,renderer,camera); t+=.004; group.rotation.y=t; renderer.render(scene,camera);})();
+  (function loop(){
+    requestAnimationFrame(loop);
+    if(window.isMachineMode)return;
+    syncSize(canvas,renderer,camera); t+=.004; group.rotation.y=t; renderer.render(scene,camera);
+  })();
 })();
 
 // ── SKILLS 3D: floating polyhedra ──
@@ -407,7 +704,11 @@ document.querySelectorAll('a,button,.skc,.pc,.ast').forEach(el=>{
   }
   scene.add(new THREE.AmbientLight(0x001133,2));
   scene.add(new THREE.PointLight(0x00f0ff,2,80));
-  (function loop(){requestAnimationFrame(loop); syncSize(canvas,renderer,camera); shapes.forEach(s=>{s.rotation.x+=s.userData.rv.x;s.rotation.y+=s.userData.rv.y;}); renderer.render(scene,camera);})();
+  (function loop(){
+    requestAnimationFrame(loop);
+    if(window.isMachineMode)return;
+    syncSize(canvas,renderer,camera); shapes.forEach(s=>{s.rotation.x+=s.userData.rv.x;s.rotation.y+=s.userData.rv.y;}); renderer.render(scene,camera);
+  })();
 })();
 
 // ── EXPERIENCE 3D: nested rotating cubes ──
@@ -417,16 +718,18 @@ document.querySelectorAll('a,button,.skc,.pc,.ast').forEach(el=>{
   camera.position.set(0,0,18);
   const group=new THREE.Group(); scene.add(group);
   [3,5,7,9].forEach((size,i)=>{
-    const m=new THREE.Mesh(new THREE.BoxGeometry(size,size,size),new THREE.MeshStandardMaterial({color:i%2===0?0x00f0ff:0x00b8d4,wireframe:true,transparent:true,opacity:.32-i*.05,emissive:i%2===0?0x00f0ff:0x00b8d4,emissiveIntensity:.2}));
+    const m=new THREE.Mesh(new THREE.BoxGeometry(size,size,size),new THREE.MeshStandardMaterial({color:i%2===0?0x00f0ff:0x00b8d4,wireframe:true,transparent:true,opacity:.15-i*.03,emissive:i%2===0?0x00f0ff:0x00b8d4,emissiveIntensity:.12}));
     m.userData.sp=(i+1)*.0025*(i%2===0?1:-1); group.add(m);
   });
-  const ring=new THREE.Mesh(new THREE.TorusGeometry(7,.055,8,90),new THREE.MeshBasicMaterial({color:0x00f0ff,transparent:true,opacity:.38}));
+  const ring=new THREE.Mesh(new THREE.TorusGeometry(7,.055,8,90),new THREE.MeshBasicMaterial({color:0x00f0ff,transparent:true,opacity:.12}));
   ring.rotation.x=Math.PI/2; group.add(ring);
   scene.add(new THREE.AmbientLight(0x001133,2));
   const pl=new THREE.PointLight(0x00f0ff,4,45); pl.position.set(5,5,10); scene.add(pl);
   let t=0;
   (function loop(){
-    requestAnimationFrame(loop); syncSize(canvas,renderer,camera); t+=.006;
+    requestAnimationFrame(loop);
+    if(window.isMachineMode)return;
+    syncSize(canvas,renderer,camera); t+=.006;
     group.children.forEach(c=>{if(c.userData.sp){c.rotation.x+=c.userData.sp;c.rotation.y+=c.userData.sp*.7;}});
     group.rotation.y=Math.sin(t)*.25; ring.rotation.z=t; renderer.render(scene,camera);
   })();
@@ -450,7 +753,11 @@ document.querySelectorAll('a,button,.skc,.pc,.ast').forEach(el=>{
   scene.add(new THREE.AmbientLight(0x001133,1));
   const pl=new THREE.PointLight(0x00f0ff,2,70); pl.position.set(0,0,12); scene.add(pl);
   let t=0;
-  (function loop(){requestAnimationFrame(loop); syncSize(canvas,renderer,camera); t+=.005; nodes.forEach(n=>{n.position.y+=Math.sin(t+n.userData.ph)*n.userData.vy;}); renderer.render(scene,camera);})();
+  (function loop(){
+    requestAnimationFrame(loop);
+    if(window.isMachineMode)return;
+    syncSize(canvas,renderer,camera); t+=.005; nodes.forEach(n=>{n.position.y+=Math.sin(t+n.userData.ph)*n.userData.vy;}); renderer.render(scene,camera);
+  })();
 })();
 
 // ── CONTACT 3D: particle sphere + rings ──
@@ -470,7 +777,11 @@ document.querySelectorAll('a,button,.skc,.pc,.ast').forEach(el=>{
   scene.add(new THREE.AmbientLight(0x001133,2));
   const pl=new THREE.PointLight(0x00f0ff,3,35); pl.position.set(0,0,8); scene.add(pl);
   let t=0;
-  (function loop(){requestAnimationFrame(loop); syncSize(canvas,renderer,camera); t+=.004; pts.rotation.y=t; pts.rotation.x=t*.28; ring.rotation.z=t*.45; ring2.rotation.y=-t*.6; renderer.render(scene,camera);})();
+  (function loop(){
+    requestAnimationFrame(loop);
+    if(window.isMachineMode)return;
+    syncSize(canvas,renderer,camera); t+=.004; pts.rotation.y=t; pts.rotation.x=t*.28; ring.rotation.z=t*.45; ring2.rotation.y=-t*.6; renderer.render(scene,camera);
+  })();
 })();
 
 // ── SKILL CARD TILT ──
@@ -524,6 +835,396 @@ function handleSubmit(e){
 
 // ── MOBILE MENU ──
 document.querySelectorAll('.nls a').forEach(a=>a.addEventListener('click',()=>document.getElementById('nls').classList.remove('open')));
+
+// ── VIEW MODE TOGGLE (HUMAN / MACHINE) ──
+window.isMachineMode = false;
+let isTransitioning = false;
+
+// Create the transition overlay element
+const transOverlay = document.createElement('div');
+transOverlay.className = 'view-transition-overlay';
+document.body.appendChild(transOverlay);
+
+function setViewMode(mode, animate) {
+  const body = document.body;
+  const btnHuman = document.querySelector('[data-switch-mode="human"]');
+  const btnMachine = document.querySelector('[data-switch-mode="machine"]');
+  const humanLayout = document.querySelector('.human-layout');
+  const machineLayout = document.querySelector('.machine-layout');
+
+  // Update button states immediately
+  if (mode === 'machine') {
+    btnMachine.classList.add('active');
+    btnHuman.classList.remove('active');
+    window.isMachineMode = true;
+  } else {
+    btnHuman.classList.add('active');
+    btnMachine.classList.remove('active');
+    window.isMachineMode = false;
+  }
+  localStorage.setItem('preferred-view', mode);
+
+  // --- INSTANT (no animation, used on first page load) ---
+  if (!animate) {
+    if (mode === 'machine') {
+      body.classList.add('machine');
+    } else {
+      body.classList.remove('machine');
+    }
+    // Clean up any leftover transition classes
+    humanLayout.classList.remove('fading-out','fading-in','reveal');
+    machineLayout.classList.remove('fading-out','fading-in','reveal');
+    return;
+  }
+
+  // --- ANIMATED CROSSFADE ---
+  if (isTransitioning) return;
+  isTransitioning = true;
+
+  // Determine outgoing and incoming
+  const outgoing = mode === 'machine' ? humanLayout : machineLayout;
+  const incoming = mode === 'machine' ? machineLayout : humanLayout;
+
+  // Step 1: Flash the overlay & fade out current view
+  transOverlay.classList.add('active');
+  outgoing.classList.add('fading-out');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+
+  setTimeout(() => {
+    // Step 2: Swap the body state and prepare the incoming layout
+    if (mode === 'machine') {
+      body.classList.add('machine');
+    } else {
+      body.classList.remove('machine');
+    }
+    outgoing.classList.remove('fading-out');
+
+    // Prepare incoming: make it visible but transparent
+    incoming.classList.add('fading-in');
+
+    // Force reflow so the browser registers the initial state
+    void incoming.offsetHeight;
+
+    // Step 3: Reveal the incoming layout
+    incoming.classList.add('reveal');
+    transOverlay.classList.remove('active');
+
+    setTimeout(() => {
+      // Step 4: Clean up all transition classes
+      incoming.classList.remove('fading-in', 'reveal');
+      isTransitioning = false;
+    }, 500);
+  }, 380);
+}
+
+// Event listeners for toggle buttons
+document.querySelectorAll('[data-switch-mode]').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const targetMode = btn.getAttribute('data-switch-mode');
+    if ((targetMode === 'machine') === window.isMachineMode) return; // already in that mode
+    setViewMode(targetMode, true);
+  });
+});
+
+// Keypress shortcut (Press '/' to toggle)
+window.addEventListener('keydown', (e) => {
+  if (e.key === '/') {
+    const active = document.activeElement;
+    if (active && (active.tagName === 'INPUT' || active.tagName === 'TEXTAREA')) return;
+    e.preventDefault();
+    setViewMode(window.isMachineMode ? 'human' : 'machine', true);
+  }
+});
+
+// Load preferences on page load (instant, no animation)
+window.addEventListener('DOMContentLoaded', () => {
+  const savedView = localStorage.getItem('preferred-view') || 'human';
+  setViewMode(savedView, false);
+});
+
+// ── INTERACTIVE TERMINAL ──
+(function() {
+  const termInput = document.getElementById('termInput');
+  const termHistory = document.getElementById('termHistory');
+  if (!termInput || !termHistory) return;
+
+  const cmdHistory = [];
+  let historyIndex = -1;
+
+  // Command registry
+  const commands = {
+    help: () =>
+`Available commands:
+  help          Show this help message
+  whoami        Display profile summary
+  skills        List technical skills (JSON)
+  experience    Show work experience timeline
+  projects      Fetch project portfolio
+  contact       Display contact information
+  neofetch      System info (hacker style)
+  clear         Clear terminal history
+  date          Current date & time
+  uptime        Session uptime
+  echo [text]   Echo back text
+  sudo hire me  ;)`,
+
+    whoami: () =>
+`┌─────────────────────────────────────────┐
+│  Rachit Kumar                           │
+│  Senior Data Analyst · 4+ Years Exp.    │
+│                                         │
+│  "Turning raw data into real decisions  │
+│   — one pipeline at a time."            │
+│                                         │
+│  Stack: Python · SQL · MongoDB          │
+│         Selenium · Pandas · Appium      │
+│  Status: Available for opportunities    │
+└─────────────────────────────────────────┘`,
+
+    skills: () =>
+`{
+  "Data & Analytics": [
+    "Python", "Pandas", "NumPy", "SQL", "MongoDB", "JSON"
+  ],
+  "Automation & Testing": [
+    "Selenium", "Appium", "Android Studio",
+    "Web Crawling", "Web Scraping"
+  ],
+  "Infrastructure": [
+    "Linux", "VM"
+  ],
+  "Soft Skills": [
+    "Problem Solving", "Critical Thinking", "Team Leadership"
+  ]
+}`,
+
+    experience: () =>
+`┌───────────┬──────────────────────────────┬──────────────┐
+│ Year      │ Role                         │ Company      │
+├───────────┼──────────────────────────────┼──────────────┤
+│ 2022-Pres │ Senior Data Analyst          │ Company Name │
+│           │ → Led data pipeline dev      │              │
+│           │ → Managed analyst team       │              │
+├───────────┼──────────────────────────────┼──────────────┤
+│ 2021-2022 │ Data Analyst                 │ Company Name │
+│           │ → Scaled web scrapers        │              │
+│           │ → Designed SQL dashboards    │              │
+├───────────┼──────────────────────────────┼──────────────┤
+│ 2020-2021 │ Jr. Data Analyst / QA Eng.   │ Company Name │
+│           │ → Automated Android tests    │              │
+│           │ → Pandas/NumPy analysis      │              │
+└───────────┴──────────────────────────────┴──────────────┘`,
+
+    projects: () =>
+`[01] Automated Market Intelligence Pipeline
+     ├─ Tech: Python, Selenium, Pandas, MongoDB, Linux
+     └─ Daily competitor pricing harvester → MongoDB dashboards
+
+[02] Android App Test Automation Framework
+     ├─ Tech: Appium, Android Studio, Python, NumPy, JSON
+     └─ Reduced manual QA workload by 70%
+
+[03] Unified SQL & NoSQL Analytics Layer
+     ├─ Tech: SQL, MongoDB, Python, Pandas, VM
+     └─ Cross-source executive reporting pipeline`,
+
+    contact: () =>
+`+---------------------------------------------+
+|  [mail]  rachitr68@gmail.com                |
+|  [link]  linkedin.com/in/rachitrajput       |
+|                                             |
+|  Open to: Data roles >> Automation work     |
+|           Freelance >> Full-time            |
++---------------------------------------------+`,
+
+    neofetch: () => {
+      const now = new Date();
+      return `
+        ██████╗ ██╗  ██╗
+        ██╔══██╗██║ ██╔╝    rachit@analyst
+        ██████╔╝█████╔╝     ──────────────
+        ██╔══██╗██╔═██╗     OS: Data Pipeline OS v4.0
+        ██║  ██║██║  ██╗    Host: Portfolio Terminal
+        ╚═╝  ╚═╝╚═╝  ╚═╝    Kernel: Python 3.12
+                             Uptime: 4+ years
+                             Packages: Pandas, NumPy, Selenium
+                             Shell: bash 5.2
+                             Resolution: Full-Stack Analytics
+                             Terminal: rachit-term v1.0
+                             CPU: Problem Solving @ ∞GHz
+                             Memory: ∞ Rows Processed
+                             Local Time: ${now.toLocaleString()}`;
+    },
+
+    clear: () => '__CLEAR__',
+
+    date: () => new Date().toString(),
+
+    uptime: () => {
+      const start = window._termStart || Date.now();
+      const diff = Math.floor((Date.now() - start) / 1000);
+      const m = Math.floor(diff / 60);
+      const s = diff % 60;
+      return `Session uptime: ${m}m ${s}s`;
+    },
+
+    'sudo hire me': () =>
+`
+  >> Great choice! Sending hiring request...
+  ========================================
+  [################################] 100%
+  [OK] Request received!
+
+  [mail] Drop a message: rachitr68@gmail.com
+  [link] Or connect: linkedin.com/in/rachitrajput
+`,
+  };
+
+  window._termStart = Date.now();
+  let isStreaming = false;
+
+  function processCommand(raw) {
+    const trimmed = raw.trim();
+    if (!trimmed) return;
+    if (isStreaming) return; // block input while streaming
+
+    cmdHistory.push(trimmed);
+    historyIndex = cmdHistory.length;
+
+    // Append the command echo
+    const cmdEl = document.createElement('div');
+    cmdEl.className = 'cmd-line';
+    cmdEl.innerHTML = '<span class="prompt">rachit@analyst:~$</span> ' + escapeHTML(trimmed);
+    termHistory.appendChild(cmdEl);
+
+    // Resolve the output
+    let output;
+    if (trimmed.toLowerCase().startsWith('echo ')) {
+      output = trimmed.slice(5);
+    } else {
+      const handler = commands[trimmed.toLowerCase()];
+      if (handler) {
+        output = typeof handler === 'function' ? handler() : handler;
+      } else {
+        output = `bash: ${trimmed.split(' ')[0]}: command not found. Type 'help' for available commands.`;
+      }
+    }
+
+    // Special: clear
+    if (output === '__CLEAR__') {
+      termHistory.innerHTML = '';
+      return;
+    }
+
+    // Stream the output character by character
+    streamOutput(output);
+  }
+
+  function streamOutput(text) {
+    isStreaming = true;
+    termInput.disabled = true;
+    termInput.placeholder = '⏳ streaming...';
+
+    const outEl = document.createElement('div');
+    outEl.className = 'cmd-output';
+    termHistory.appendChild(outEl);
+
+    // Add a blinking cursor at end of output
+    const streamCursor = document.createElement('span');
+    streamCursor.className = 'stream-cursor';
+    streamCursor.textContent = '▌';
+    outEl.appendChild(streamCursor);
+
+    const chars = text.split('');
+    let i = 0;
+    const termBody = termHistory.closest('.terminal-body');
+
+    // Adaptive speed: shorter texts stream slower (more dramatic),
+    // longer texts stream faster so users don't wait forever.
+    const len = chars.length;
+    let baseDelay;
+    if (len < 80) baseDelay = 22;
+    else if (len < 300) baseDelay = 12;
+    else if (len < 600) baseDelay = 6;
+    else baseDelay = 3;
+
+    function typeNext() {
+      if (i >= chars.length) {
+        // Done streaming — remove cursor, re-enable input
+        streamCursor.remove();
+        isStreaming = false;
+        termInput.disabled = false;
+        termInput.placeholder = "type 'help' for available commands...";
+        termInput.focus();
+        return;
+      }
+
+      // Insert text node before the cursor
+      const charNode = document.createTextNode(chars[i]);
+      outEl.insertBefore(charNode, streamCursor);
+      i++;
+
+      // Auto-scroll
+      if (termBody) termBody.scrollTop = termBody.scrollHeight;
+
+      // Variable delay: newlines get a slight pause for readability
+      let delay = baseDelay;
+      if (chars[i - 1] === '\n') delay = baseDelay + 30;
+      // Punctuation gets a tiny pause
+      else if ('.!?:'.includes(chars[i - 1])) delay = baseDelay + 15;
+
+      setTimeout(typeNext, delay);
+    }
+
+    typeNext();
+  }
+
+  function escapeHTML(str) {
+    return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  }
+
+  termInput.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      processCommand(termInput.value);
+      termInput.value = '';
+    } else if (e.key === 'ArrowUp') {
+      e.preventDefault();
+      if (historyIndex > 0) {
+        historyIndex--;
+        termInput.value = cmdHistory[historyIndex];
+      }
+    } else if (e.key === 'ArrowDown') {
+      e.preventDefault();
+      if (historyIndex < cmdHistory.length - 1) {
+        historyIndex++;
+        termInput.value = cmdHistory[historyIndex];
+      } else {
+        historyIndex = cmdHistory.length;
+        termInput.value = '';
+      }
+    }
+  });
+
+  // Stop '/' from toggling the view when typing in the terminal
+  termInput.addEventListener('keydown', (e) => {
+    e.stopPropagation();
+  });
+
+  // Auto-focus terminal input when machine mode is activated
+  const observer = new MutationObserver(() => {
+    if (document.body.classList.contains('machine')) {
+      setTimeout(() => termInput.focus(), 500);
+    }
+  });
+  observer.observe(document.body, { attributes: true, attributeFilter: ['class'] });
+
+  // Click anywhere in terminal body to focus input
+  const termBody = document.querySelector('.machine-layout .terminal-body');
+  if (termBody) {
+    termBody.addEventListener('click', () => termInput.focus());
+  }
+})();
 </script>
 </body>
 </html>
